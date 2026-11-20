@@ -1,0 +1,31 @@
+name: Build WLED-MM with MultiRelay (ESP8266)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install PlatformIO
+        run: pip install platformio
+
+      - name: Build firmware (ESP8266 + MultiRelay)
+        run: pio run -e nodemcuv2
+        env:
+          PLATFORMIO_BUILD_FLAGS: -D USERMOD_MULTI_RELAY
+
+      - name: Upload firmware artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: wled-mm-multirelay-esp8266
+          path: .pio/build/nodemcuv2/firmware.bin
+          if-no-files-found: error
